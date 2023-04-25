@@ -14,6 +14,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderController = void 0;
 const common_1 = require("@nestjs/common");
+const order_dto_1 = require("../dto/order.dto");
+const orderUpdate_dto_1 = require("../dto/orderUpdate.dto");
 const order_service_1 = require("./order.service");
 let OrderController = class OrderController {
     constructor(orderService) {
@@ -26,8 +28,17 @@ let OrderController = class OrderController {
     getOrderById(orderId) {
         return this.orderService.getOrderById(orderId);
     }
+    createOrder(body) {
+        const orderCreated = this.orderService.createOrder(body);
+        return `Order with id: ${orderCreated} created`;
+    }
+    updateOrder(body, id) {
+        this.orderService.updateOrder(body, id);
+        return 'Order updated';
+    }
     deleteOrder(orderId) {
-        return this.orderService.deleteOrder(orderId);
+        this.orderService.deleteOrder(orderId);
+        return { message: `Order deleted` };
     }
 };
 __decorate([
@@ -44,7 +55,22 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], OrderController.prototype, "getOrderById", null);
 __decorate([
-    (0, common_1.Delete)("/:id"),
+    (0, common_1.Post)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [order_dto_1.OrderDto]),
+    __metadata("design:returntype", void 0)
+], OrderController.prototype, "createOrder", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [orderUpdate_dto_1.UpdateDto, String]),
+    __metadata("design:returntype", void 0)
+], OrderController.prototype, "updateOrder", null);
+__decorate([
+    (0, common_1.Delete)(":id"),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

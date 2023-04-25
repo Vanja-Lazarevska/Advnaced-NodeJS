@@ -8,43 +8,41 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderService = void 0;
 const common_1 = require("@nestjs/common");
+const order_data_1 = require("../data/order.data");
 let OrderService = class OrderService {
-    constructor() {
-        this.orders = [
-            { id: '6', orderDate: new Date(),
-                productsOrdered: [
-                    { id: '2', productName: 'Milk', productPrice: 70 },
-                    { id: '8', productName: 'Eggs', productPrice: 100 }
-                ] },
-            { id: '16', orderDate: new Date(),
-                productsOrdered: [
-                    { id: '12', productName: 'Yogurt', productPrice: 70 },
-                    { id: '18', productName: 'Bread', productPrice: 30 },
-                    { id: '20', productName: 'Musli', productPrice: 130 }
-                ] },
-            { id: '7', orderDate: new Date(),
-                productsOrdered: [
-                    { id: '9', productName: 'Chocolate', productPrice: 60 },
-                    { id: '2', productName: 'Beer', productPrice: 50 }
-                ] }
-        ];
-    }
     getAllOrders() {
-        return this.orders;
+        return order_data_1.orders;
     }
     getOrderById(orderId) {
-        const order = this.orders.find(order => order.id === orderId);
+        const order = order_data_1.orders.find(order => order.id === orderId);
         if (!order) {
-            return { message: "No order found" };
+            throw new common_1.HttpException(`Order with id: ${orderId} not found`, common_1.HttpStatus.NOT_FOUND);
         }
-        return { message: `Order with id ${orderId} found` };
+        return order;
+    }
+    createOrder(orderDto) {
+        orderDto.orderDate = new Date();
+        order_data_1.orders.push(orderDto);
+        return orderDto.id;
+    }
+    updateOrder(orderDto, orderId) {
+        const orderFound = order_data_1.orders.filter(order => order.id === orderId);
+        if (orderFound.length === 0) {
+            throw new common_1.HttpException('Order with such id was not found', common_1.HttpStatus.NOT_FOUND);
+        }
+        const updatedOrder = orderFound.map(order => {
+            order.id = orderDto.id || order.id;
+            order.orderDate = orderDto.orderDate || order.orderDate;
+            order.productsOrdered = orderDto.productsOrdered || order.productsOrdered;
+        });
+        return updatedOrder;
     }
     deleteOrder(orderId) {
-        const deleteOrder = this.orders.filter(order => order.id !== orderId);
-        if (!deleteOrder) {
-            return { message: "No order found" };
+        const deleteOrder = order_data_1.orders.filter(order => order.id !== orderId);
+        if (deleteOrder.length === order_data_1.orders.length) {
+            throw new common_1.HttpException(`Order with id ${orderId} was not found`, common_1.HttpStatus.NOT_FOUND);
         }
-        return { message: `Order with id ${orderId} was deleted` };
+        return `Order with id: ${orderId} was deleted`;
     }
 };
 OrderService = __decorate([

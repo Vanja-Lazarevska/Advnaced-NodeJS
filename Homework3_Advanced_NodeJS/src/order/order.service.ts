@@ -1,51 +1,67 @@
-import { Injectable } from '@nestjs/common';
-import { Order } from 'src/interface/order.interface';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { orders } from 'src/data/order.data';
+import { OrderDto } from 'src/dto/order.dto';
+import { UpdateDto } from 'src/dto/orderUpdate.dto';
 
 @Injectable()
 export class OrderService {
-    orders: Order[] = [
-        {id: '6', orderDate: new Date(), 
-        productsOrdered:[
-        {id: '2', productName: 'Milk', productPrice: 70},
-        {id: '8', productName: 'Eggs', productPrice: 100}
-      ]}, 
-      {id: '16', orderDate: new Date(), 
-      productsOrdered:[
-      {id: '12', productName: 'Yogurt', productPrice: 70},
-      {id: '18', productName: 'Bread', productPrice: 30},
-      {id: '20', productName: 'Musli', productPrice: 130}
-    ]}, 
-    {id: '7', orderDate: new Date(), 
-    productsOrdered:[
-    {id: '9', productName: 'Chocolate', productPrice: 60},
-    {id: '2', productName: 'Beer', productPrice: 50}
-    ]}
-      ]
-
+    
       getAllOrders() {
-        return this.orders
+        return orders
       }
 
-      getOrderById(orderId: string): {message: string} {
+      getOrderById(orderId: string) {
 
-        const order = this.orders.find(order => order.id === orderId)
+        const order = orders.find(order => order.id === orderId)
 
         if(!order){
-          return {message: "No order found"}
+          throw new HttpException(`Order with id: ${orderId} not found`, HttpStatus.NOT_FOUND)
         }
 
-        return {message: `Order with id ${orderId} found`}
+
+        return order
 
       }
 
-      deleteOrder(orderId: string): {message: string} {
-        const deleteOrder = this.orders.filter(order => order.id !== orderId)
+      createOrder(orderDto: OrderDto) {
 
-        if(!deleteOrder){
-          return {message: "No order found"}
-        }
-        return {message: `Order with id ${orderId} was deleted`}
+        orderDto.orderDate = new Date()
+  
+        orders.push(orderDto)
+        return orderDto.id
+
       }
+
+      updateOrder(orderDto: UpdateDto, orderId:string) {
+        
+        const orderFound = orders.filter(order => order.id === orderId)
+        if(orderFound.length === 0){
+          throw new HttpException('Order with such id was not found', HttpStatus.NOT_FOUND)
+        }
+
+          const updatedOrder = orderFound.map(order => {
+            order.id = orderDto.id || order.id;
+            order.orderDate = orderDto.orderDate || order.orderDate;
+            order.productsOrdered = orderDto.productsOrdered || order.productsOrdered
+          })
+          
+          return updatedOrder
+     }
+
+     deleteOrder(orderId: string) {
+
+      const deleteOrder = orders.filter(order => order.id !== orderId)
+      
+      
+      if(deleteOrder.length === orders.length){
+        throw new HttpException(`Order with id ${orderId} was not found`, HttpStatus.NOT_FOUND)
+      }
+
+      return `Order with id: ${orderId} was deleted`
+       
+    
+    }
+
 
 
       

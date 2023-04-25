@@ -1,11 +1,9 @@
-import { Order } from 'src/interface/order.interface';
+import { OrderDto } from 'src/dto/order.dto';
+import { UpdateDto } from 'src/dto/orderUpdate.dto';
 export declare class OrderService {
-    orders: Order[];
-    getAllOrders(): Order[];
-    getOrderById(orderId: string): {
-        message: string;
-    };
-    deleteOrder(orderId: string): {
-        message: string;
-    };
+    getAllOrders(): import("../interface/order.interface").Order[];
+    getOrderById(orderId: string): import("../interface/order.interface").Order;
+    createOrder(orderDto: OrderDto): string;
+    updateOrder(orderDto: UpdateDto, orderId: string): void[];
+    deleteOrder(orderId: string): string;
 }
