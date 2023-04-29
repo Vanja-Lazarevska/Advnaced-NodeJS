@@ -1,5 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Product } from 'src/interface/product.interface';
+import {InjectRepository} from '@nestjs/typeorm'
+import {Repository} from 'typeorm'
+import { ProductsEntity } from 'src/entities/products.entity';
+import { ProductDto } from 'src/dto/product.dto';
+import { v4 as uuid } from 'uuid'
 
 @Injectable()
 export class ProductsService {
@@ -26,8 +31,34 @@ export class ProductsService {
             productPrice: 70
         }
     ]
+    constructor(@InjectRepository(ProductsEntity) private readonly productRepository: Repository<ProductsEntity>) {}
 
-    getAllProducts() {
-        return this.arrayOfProducts
+
+    async getAllProducts() {
+     return await this.productRepository.find()
+    }
+
+   async getProductById(productId: string) {
+       const productFound = await this.productRepository.findOneBy({id: productId})
+       console.log(productFound)
+        if(!productFound){
+            throw new HttpException(`Product with id: ${productId} was not found`, HttpStatus.NOT_FOUND)
+        } else {
+            return productFound
+        }
+    }
+
+    async createProduct(productData: ProductDto) {
+
+        const product: Product = {
+            id: uuid(),
+            ...productData
+        }
+        const productCreated = this.productRepository.create(product)
+
+        const productSaved = await this.productRepository.save(productCreated)
+
+        return productSaved.id
+
     }
 }

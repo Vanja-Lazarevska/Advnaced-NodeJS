@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { orders } from 'src/data/order.data';
 import { OrderDto } from 'src/dto/order.dto';
-import { UpdateDto } from 'src/dto/orderUpdate.dto';
+import { UpdateDto } from 'src/dto/order.dto';
 
 @Injectable()
 export class OrderService {
