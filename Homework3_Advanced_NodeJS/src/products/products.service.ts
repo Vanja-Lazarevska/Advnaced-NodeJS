@@ -35,11 +35,14 @@ export class ProductsService {
 
 
     async getAllProducts() {
-     return await this.productRepository.find()
+     return await this.productRepository.find({relations: ['order']})
     }
 
    async getProductById(productId: string) {
-       const productFound = await this.productRepository.findOneBy({id: productId})
+       const productFound = await this.productRepository.findOne({
+        where: {id: productId},
+        relations: ['order']
+       })
        console.log(productFound)
         if(!productFound){
             throw new HttpException(`Product with id: ${productId} was not found`, HttpStatus.NOT_FOUND)

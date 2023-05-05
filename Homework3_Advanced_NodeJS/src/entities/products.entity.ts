@@ -1,5 +1,6 @@
 import { Product } from "src/interface/product.interface";
-import {Entity, Column, PrimaryColumn} from 'typeorm'
+import {Entity, Column, PrimaryColumn, ManyToOne} from 'typeorm'
+import { OrderEntity } from "./order.entity";
 
 @Entity()
 export class ProductsEntity implements Product {
@@ -10,5 +11,8 @@ export class ProductsEntity implements Product {
     productName: string;
 
     @Column()
-    productPrice: number
+    productPrice: number;
+
+    @ManyToOne(() => OrderEntity, (orderEntity) => orderEntity.productsOrdered, {onDelete: 'CASCADE'})
+    order: OrderEntity
 }
