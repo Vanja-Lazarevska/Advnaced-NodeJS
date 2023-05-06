@@ -1,11 +1,23 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common'
+import { DocumentBuilder } from '@nestjs/swagger';
+import { SwaggerModule } from '@nestjs/swagger/dist';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ValidationPipe())
+
+  const swaggerConfiguration = new DocumentBuilder()
+  .setTitle('Food Order Application')
+  .setDescription('Food order application created as homework for NodeJS Advanced')
+  .addBearerAuth()
+  .build()
+
+  const document = SwaggerModule.createDocument(app, swaggerConfiguration)
+  SwaggerModule.setup('app-docs',app, document)
+
   await app.listen(3000);
 }
 bootstrap();
@@ -76,3 +88,23 @@ bootstrap();
 // Create local and jwt guards
 // Create route for login that returns access_token to the user
 // Orders routes must be guarded, and to access them we should provide access_token in the requst
+
+
+// Implement relation and authentication
+// Requirements: NOTE: Apply the requirements ON TOP OF the previous homework.
+// PART 1
+
+// On the user entity add one more property called role that is of type enum ( the enum should have two roles: ADMIN and COSTUMER)
+// Create user entity using the typeorm. (It will create user table in the database for us)
+// Create one more endpoint to register user. (Should include create user dto. The role should be provided from the request body)
+// Install bcrypt (it is library to hash and compare hashed password; COMMAND TO INSTALL: npm install brypt; npm install --save @types/bcrypt)
+// When registering new user, hash the user password before saving into the db, and when loging in the user, compare the password provided with the one of the db
+// Make sure we can register a user, and login with the creadentials.
+// PART 2
+
+// Create costum roles decorator
+// Create role guard
+// The routes for creating, removing and updating a product can only be accessed by a user that has the role ADMIN.
+// BONUS:
+
+// Add swagger documentation on your nest application

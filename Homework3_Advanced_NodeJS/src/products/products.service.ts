@@ -3,7 +3,7 @@ import { Product } from 'src/interface/product.interface';
 import {InjectRepository} from '@nestjs/typeorm'
 import {Repository} from 'typeorm'
 import { ProductsEntity } from 'src/entities/products.entity';
-import { ProductDto } from 'src/dto/product.dto';
+import { ProductDto, updateProductDto } from 'src/dto/product.dto';
 import { v4 as uuid } from 'uuid'
 
 @Injectable()
@@ -63,5 +63,22 @@ export class ProductsService {
 
         return productSaved.id
 
+    }
+
+    async updateProduct(updateProductDto: updateProductDto, productId: string){
+
+        const newProduct = await this.productRepository.preload({id: productId, ...updateProductDto})
+        console.log(newProduct)
+        if(!newProduct){
+            throw new HttpException('Product not found', HttpStatus.NOT_FOUND)
+        }
+
+        const productSaved = await this.productRepository.save(newProduct)
+        return newProduct.id
+
+    }
+
+    async deleteProduct(id: string){
+        const productDeleted =await this.productRepository.delete(id)
     }
 }

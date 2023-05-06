@@ -13,3 +13,10 @@ export class ProductDto implements Product{
     @IsNotEmpty()
     productPrice: number
 }
+
+export class updateProductDto {
+    id: string;
+    productName: string;
+    productPrice: number
+
+}
