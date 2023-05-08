@@ -3,6 +3,10 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common'
 import { DocumentBuilder } from '@nestjs/swagger';
 import { SwaggerModule } from '@nestjs/swagger/dist';
+import * as dotenv from 'dotenv'
+
+dotenv.config()
+const secret = process.env.SECRET_KEY
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
